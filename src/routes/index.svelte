@@ -1,7 +1,6 @@
 <script>
 import { onMount } from 'svelte';
 
-
 	const n = Math.pow(2, 20);
 	const fragmentShaderCode = `
 precision highp float;
@@ -65,7 +64,9 @@ void main() {
 
 	onMount(async () => {
 	const GlslCanvas = (await import("glslCanvas")).default;
-	console.log(GlslCanvas);
+	const Meyda = (await import("Meyda")).default;
+	console.log(GlslCanvas)
+	console.log("meyda", Meyda)
 	const width = 980;
 	const height = width;
 	const canvas = document.createElement('canvas');
@@ -114,10 +115,7 @@ void main() {
 	const a_position = gl.getAttribLocation(program, "a_position")
 	gl.vertexAttribPointer(a_position, 2, gl.FLOAT, false, 0, 0);
 	gl.enableVertexAttribArray(a_position);
-	const u_a = gl.getUniformLocation(program, "u_a");
-	const u_b = gl.getUniformLocation(program, "u_b");
-	const u_c = gl.getUniformLocation(program, "u_c");
-	const u_d = gl.getUniformLocation(program, "u_d");
+
 	let a = -2.5;
 	const b = -2.0;
 	const c = -1.2;
@@ -130,13 +128,18 @@ void main() {
 	sandbox.setUniform("u_c", c);
 	sandbox.setUniform("u_d", d);
 	sandbox.load(fragmentShaderCode, vertexShaderCode);
+	let analyzer = {get:()=>{}};
 	function step(timestamp) {
 		if (start === undefined) {
 			start = timestamp;
 		}
 		const elapsed = timestamp - start;
 
-		const shocking = Math.min(Math.sin(elapsed) * 66, 300);
+		const features = analyzer.get(['rms']);
+		const audioLevel = features ? features.rms : 0;
+		const multiplier = Math.floor(audioLevel * 10000);
+		const shocking = Math.min(Math.max(Math.sin(elapsed) * multiplier, -66), 66);
+		console.log(shocking);
 		document.getElementById("attractor").style.transform = 'translateX(' + shocking + 'px)';
 		const a = -2.0 + Math.sin(timestamp / 8000);
 		sandbox.setUniform("u_a", a);
@@ -147,8 +150,49 @@ void main() {
 		window.requestAnimationFrame(step);
 	}
 	window.requestAnimationFrame(step);
-});
 
+	(function () {
+		console.log("Microphone?")
+		var errorCallback = function (err) {
+			throw err;
+		};
+
+		try {
+			navigator.getUserMedia = navigator.webkitGetUserMedia ||
+				navigator.getUserMedia || navigator.mediaDevices.getUserMedia;
+			var constraints = { video: false, audio: true };
+			var successCallback = function (mediaStream) {
+				const context = new AudioContext();
+				analyzer = Meyda.createMeydaAnalyzer({
+					audioContext: context,
+					bufferSize: 512,
+					source: context.createMediaStreamSource(mediaStream),
+					windowingFunction: 'blackman',
+					featureExtractors: ["rms"],
+				});
+
+				// document.getElementById('audioControl').style.display = 'none';
+				console.log('User allowed microphone access.');
+				console.log('Initializing AudioNode from MediaStream');
+				console.log('Setting Meyda Source to Microphone');
+				console.groupEnd();
+			};
+
+			console.log('Asking for permission...');
+			let getUserMediaPromise = navigator.getUserMedia(
+				constraints,
+				successCallback,
+				errorCallback
+			);
+			if (getUserMediaPromise) {
+				p.then(successCallback);
+				p.catch(errorCallback);
+			}
+		} catch (e) {
+			errorCallback();
+		}
+	})();
+});
 </script>
 
 <style>
