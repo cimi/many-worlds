@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "compression": "^1.7.1",
+    "glslCanvas": "^0.1.7",
     "polka": "next",
     "sirv": "^1.0.0"
   },

@@ -1,46 +1,163 @@
-<style>
-	h1, figure, p {
-		text-align: center;
-		margin: 0 auto;
-	}
+<script>
+import { onMount } from 'svelte';
 
-	h1 {
-		font-size: 2.8em;
-		text-transform: uppercase;
-		font-weight: 700;
-		margin: 0 0 0.5em 0;
-	}
 
-	figure {
-		margin: 0 0 1em 0;
-	}
+	const n = Math.pow(2, 20);
+	const fragmentShaderCode = `
+precision highp float;
 
-	img {
-		width: 100%;
-		max-width: 400px;
-		margin: 0 0 1em 0;
-	}
+varying float v_t;
 
-	p {
-		margin: 1em auto;
-	}
+const float PI = 3.14159265359;
 
-	@media (min-width: 480px) {
-		h1 {
-			font-size: 4em;
+vec3 cubehelix(float x, float y, float z) {
+	float a = y * z * (1.0 - z);
+	float c = cos(x + PI / 2.0);
+	float s = sin(x + PI / 2.0);
+	return vec3(
+		z + a * (1.78277 * s - 0.14861 * c),
+		z - a * (0.29227 * c + 0.90649 * s),
+		z + a * (1.97294 * c)
+	);
+}
+
+vec3 rainbow(float t) {
+	if (t < 0.0 || t > 1.0) t -= floor(t);
+	float ts = abs(t - 0.5);
+	return cubehelix(
+		(360.0 * t - 100.0) / 180.0 * PI,
+		1.5 - 1.5 * ts,
+		0.8 - 0.9 * ts
+	);
+}
+
+void main() {
+	gl_FragColor = vec4(rainbow(v_t / 4.0 + 0.25), 1.0);
+}
+`;
+	const vertexShaderCode = `
+precision highp float;
+
+const float PI = 3.14159265359;
+
+uniform float u_a;
+uniform float u_b;
+uniform float u_c;
+uniform float u_d;
+
+attribute vec2 a_position;
+
+varying float v_t;
+
+void main() {
+  float x1, x2 = a_position.x;
+  float y1, y2 = a_position.y;
+  for (int i = 0; i < 8; i++) {
+    x1 = x2, y1 = y2;
+    x2 = sin(u_a * y1) - cos(u_b * x1);
+    y2 = sin(u_c * x1) - cos(u_d * y1);
+  }
+  v_t = atan(a_position.y, a_position.x) / PI;
+  gl_Position = vec4(x2 / 2.0, y2 / 2.0, 0.0, 1.0);
+  gl_PointSize = 1.5;
+}
+`;
+
+	onMount(async () => {
+	const GlslCanvas = (await import("glslCanvas")).default;
+	console.log(GlslCanvas);
+	const width = 980;
+	const height = width;
+	const canvas = document.createElement('canvas');
+	const sandbox = new GlslCanvas(canvas);
+	
+	// const canvas = DOM.canvas(width * devicePixelRatio, height * devicePixelRatio);
+	canvas.width = width * devicePixelRatio;
+	canvas.height = height * devicePixelRatio;
+	canvas.style = `width: ${width}px; height: ${height}px;border:1px solid black;`;
+	const gl = canvas.value = canvas.getContext("webgl", {antialias: false, depth: false});
+	gl.getExtension("OES_texture_float");
+
+	gl.viewport(0, 0, gl.width, gl.height);
+	const fragmentShader = (() => {
+		const shader = gl.createShader(gl.FRAGMENT_SHADER);
+		gl.shaderSource(shader, fragmentShaderCode);
+		gl.compileShader(shader);
+		if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) throw gl.getShaderInfoLog(shader);
+		return shader;
+	})();
+	const vertexShader = (() => {
+		const shader = gl.createShader(gl.VERTEX_SHADER);
+  		gl.shaderSource(shader, vertexShaderCode);
+		gl.compileShader(shader);
+		if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) throw gl.getShaderInfoLog(shader);
+		return shader;
+	})();
+	const program = (() => {
+		const program = gl.createProgram();
+		gl.attachShader(program, vertexShader);
+		gl.attachShader(program, fragmentShader);
+		gl.linkProgram(program);
+		if (!gl.getProgramParameter(program, gl.LINK_STATUS)) throw gl.getProgramInfoLog(program);
+		return program;
+	})();
+	const vertexBuffer = (() => {
+		const array = new Float32Array(n * 2).map(() => Math.random() * 2 - 1);
+		const buffer = gl.createBuffer();
+		gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+		gl.bufferData(gl.ARRAY_BUFFER, array, gl.STATIC_DRAW);
+		return buffer;
+	})();
+
+	gl.useProgram(program);
+	gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+	const a_position = gl.getAttribLocation(program, "a_position")
+	gl.vertexAttribPointer(a_position, 2, gl.FLOAT, false, 0, 0);
+	gl.enableVertexAttribArray(a_position);
+	const u_a = gl.getUniformLocation(program, "u_a");
+	const u_b = gl.getUniformLocation(program, "u_b");
+	const u_c = gl.getUniformLocation(program, "u_c");
+	const u_d = gl.getUniformLocation(program, "u_d");
+	let a = -2.5;
+	const b = -2.0;
+	const c = -1.2;
+	const d = 2.0;
+
+	document.getElementById("attractor").appendChild(canvas);
+	let start;
+	sandbox.setUniform("u_a", a);
+	sandbox.setUniform("u_b", b);
+	sandbox.setUniform("u_c", c);
+	sandbox.setUniform("u_d", d);
+	sandbox.load(fragmentShaderCode, vertexShaderCode);
+	function step(timestamp) {
+		if (start === undefined) {
+			start = timestamp;
 		}
+		const elapsed = timestamp - start;
+
+		const shocking = Math.min(Math.sin(elapsed) * 66, 300);
+		document.getElementById("attractor").style.transform = 'translateX(' + shocking + 'px)';
+		const a = -2.0 + Math.sin(timestamp / 8000);
+		sandbox.setUniform("u_a", a);
+		sandbox.setUniform("u_b", b);
+		sandbox.setUniform("u_c", c);
+		sandbox.setUniform("u_d", d);
+
+		window.requestAnimationFrame(step);
 	}
+	window.requestAnimationFrame(step);
+});
+
+</script>
+
+<style>
+	
 </style>
 
 <svelte:head>
 	<title>Sapper project template</title>
 </svelte:head>
 
-<h1>Great success!</h1>
-
-<figure>
-	<img alt='Success Kid' src='successkid.jpg'>
-	<figcaption>Have fun with Sapper!</figcaption>
-</figure>
-
-<p><strong>Try editing this file (src/routes/index.svelte) to test live reloading.</strong></p>
+<div id="attractor"></div>
+<!-- <h1>Great success!</h1> -->
