@@ -1,6 +1,7 @@
 import './index.css';
 import * as serviceWorker from './serviceWorker';
 import { getMicMediaStream } from './mic';
+import { showFpsCounter } from "./stats";
 import Meyda from 'meyda';
 
 // If you want your app to work offline and load faster, you can change
@@ -23,18 +24,16 @@ async function makeMicAnalyzer() {
   });
 };
 
-async function onLoad() {
+window.onload = async function onLoad() {
   const analyzer = await makeMicAnalyzer();
-
-  function loop(timestamp) {
+  showFpsCounter(true);
+  requestAnimationFrame(function loop(timestamp) {
     if (analyzer) {
       const features = analyzer.get(["rms"]);
-      document.body.innerHTML = `<p>${features ? features.rms * 10000 : 0}</p>`;
+      const el = document.getElementById("root");
+      el.innerHTML = `<p>${features ? features.rms * 10000 : 0}</p>`;
     }
 
-    window.requestAnimationFrame(loop);
-  }
-  window.requestAnimationFrame(loop);
-}
-
-window.onload = onLoad;
+    requestAnimationFrame(loop);
+  });
+};

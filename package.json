@@ -9,7 +9,8 @@
     "@testing-library/user-event": "^7.1.2",
     "glslCanvas": "^0.1.7",
     "meyda": "^5.0.5",
-    "react-scripts": "3.4.3"
+    "react-scripts": "3.4.3",
+    "stats.js": "^0.17.0"
   },
   "scripts": {
     "start": "react-scripts start",
