@@ -20,3 +20,8 @@ code {
   background-color: white;
   border: 1px solid black;
 }
+
+#root {
+  width: 980px;
+  margin: 0 auto;
+}

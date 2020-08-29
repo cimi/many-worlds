@@ -29,7 +29,7 @@ async function makeMicAnalyzer() {
 };
 
 const [a, b, c, d] = [-2.5, -2.0, -1.2, 2.0];
-const n = 2^10;
+const n = Math.pow(2, 19);
 
 function makeGlslCanvas() {
   const width = 980;
@@ -41,8 +41,10 @@ function makeGlslCanvas() {
 
   const sandbox = new GlslCanvas(canvas);
   const gl = sandbox.gl;
-  setUniforms(sandbox, a, b, c, d);
+  // gl.viewport(0, 0, width, height);
   sandbox.load(fragmentShader, vertexShader);
+  // setUniforms(sandbox, a, b, c, d);
+
   const array = new Float32Array(n * 2).map(() => Math.random() * 2 - 1);
   const vertexBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
@@ -51,6 +53,7 @@ function makeGlslCanvas() {
   const a_position = gl.getAttribLocation(sandbox.program, "a_position");
   gl.vertexAttribPointer(a_position, 2, gl.FLOAT, false, 0, 0);
   gl.enableVertexAttribArray(a_position);
+
   document.getElementById("root").appendChild(canvas);
   return sandbox;
 }
@@ -76,8 +79,9 @@ window.onload = async function onLoad() {
       rms = features ? features.rms : 0
       el.innerHTML = `${rms}`;
     }
-    setUniforms(sandbox, Math.sin(timestamp / 8000) + rms, b, c, d);
     gl.drawArrays(gl.POINTS, 0, n);
+    setUniforms(sandbox, Math.sin(timestamp / 8000) + rms, b, c, d);
+
     requestAnimationFrame(loop);
   });
 };
