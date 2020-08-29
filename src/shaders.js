@@ -1,4 +1,4 @@
-export const fragmentShader = `
+export const fragmentShaderCode = `
 precision highp float;
 
 varying float v_t;
@@ -31,7 +31,7 @@ gl_FragColor = vec4(rainbow(v_t / 4.0 + 0.25), 1.0);
 }
 `;
 
-export const vertexShader = `
+export const vertexShaderCode = `
 precision highp float;
 
 const float PI = 3.14159265359;
