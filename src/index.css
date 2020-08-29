@@ -11,3 +11,12 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+#meyda-debug {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200px;
+  background-color: white;
+  border: 1px solid black;
+}
