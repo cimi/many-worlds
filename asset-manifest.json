@@ -1,22 +1,22 @@
 {
   "files": {
     "main.css": "/many-worlds/static/css/main.0659b3d3.chunk.css",
-    "main.js": "/many-worlds/static/js/main.f337dcd5.chunk.js",
-    "main.js.map": "/many-worlds/static/js/main.f337dcd5.chunk.js.map",
+    "main.js": "/many-worlds/static/js/main.54709d3d.chunk.js",
+    "main.js.map": "/many-worlds/static/js/main.54709d3d.chunk.js.map",
     "runtime-main.js": "/many-worlds/static/js/runtime-main.586ca028.js",
     "runtime-main.js.map": "/many-worlds/static/js/runtime-main.586ca028.js.map",
-    "static/js/2.4f897f30.chunk.js": "/many-worlds/static/js/2.4f897f30.chunk.js",
-    "static/js/2.4f897f30.chunk.js.map": "/many-worlds/static/js/2.4f897f30.chunk.js.map",
+    "static/js/2.4e84ef93.chunk.js": "/many-worlds/static/js/2.4e84ef93.chunk.js",
+    "static/js/2.4e84ef93.chunk.js.map": "/many-worlds/static/js/2.4e84ef93.chunk.js.map",
     "index.html": "/many-worlds/index.html",
-    "precache-manifest.b7a3dd8fa222b52dc361e32fd1fa655e.js": "/many-worlds/precache-manifest.b7a3dd8fa222b52dc361e32fd1fa655e.js",
+    "precache-manifest.93558441ee540693e6f5bdcf146f9428.js": "/many-worlds/precache-manifest.93558441ee540693e6f5bdcf146f9428.js",
     "service-worker.js": "/many-worlds/service-worker.js",
     "static/css/main.0659b3d3.chunk.css.map": "/many-worlds/static/css/main.0659b3d3.chunk.css.map",
-    "static/js/2.4f897f30.chunk.js.LICENSE.txt": "/many-worlds/static/js/2.4f897f30.chunk.js.LICENSE.txt"
+    "static/js/2.4e84ef93.chunk.js.LICENSE.txt": "/many-worlds/static/js/2.4e84ef93.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.586ca028.js",
-    "static/js/2.4f897f30.chunk.js",
+    "static/js/2.4e84ef93.chunk.js",
     "static/css/main.0659b3d3.chunk.css",
-    "static/js/main.f337dcd5.chunk.js"
+    "static/js/main.54709d3d.chunk.js"
   ]
 }
