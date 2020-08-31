@@ -87,27 +87,25 @@ function setUniforms(gl, program, a, b, c, d) {
   gl.uniform1f(u_c, c);
   gl.uniform1f(u_d, d);
 }
-let energy = 0;
+
 window.onload = async function onLoad() {
-  let analyzer;
   showFpsCounter(true);
   const { gl, program } = glCanvas();
+  let analyzer;
+  let energy = 0;
   requestAnimationFrame(function loop(timestamp) {
-    let mod = 0;
-    let flatness;
+    let [distort, flatness] = [0, 0];
     if (analyzer) {
       const features = analyzer.get(["energy", "spectralFlatness"]);
-      mod = features ? features.energy * 10 : 0;
+      distort = features ? features.energy * 10 : 0;
       energy += features ? features.energy / 2 : 0;
       flatness = features ? features.spectralFlatness : 0;
-      // console.log(Math.sin(energy), Math.sin(timestamp));
-      // const el = document.getElementById("meyda-debug");
-      // el.innerHTML = `${mod}`;
     }
     gl.drawArrays(gl.POINTS, 0, n);
     const a = Math.sin(energy + timestamp / 10000) - 2.0;
-    const [b, c] = [-2.0, -1.2];
-    const d = (flatness < .05) ? 2.0 - mod : 2.0;
+    const mode = (Math.floor(energy / 100) % 2) === 0
+    const [b, c] = mode ? [-2.0, -1.2] : [-2.53, -1.61];
+    const d = (flatness < .05) ? 2.0 - distort : 2.0;
     setUniforms(gl, program, a, b, c, d);
 
     requestAnimationFrame(loop);
