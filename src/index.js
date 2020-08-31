@@ -77,15 +77,17 @@ function glCanvas() {
   return { gl, program };
 }
 
-function setUniforms(gl, program, a, b, c, d) {
+function setUniforms(gl, program, a, b, c, d, color) {
   const u_a = gl.getUniformLocation(program, "u_a")
   const u_b = gl.getUniformLocation(program, "u_b")
   const u_c = gl.getUniformLocation(program, "u_c")
   const u_d = gl.getUniformLocation(program, "u_d")
+  const u_color = gl.getUniformLocation(program, "u_color")
   gl.uniform1f(u_a, a);
   gl.uniform1f(u_b, b);
   gl.uniform1f(u_c, c);
   gl.uniform1f(u_d, d);
+  gl.uniform1f(u_color, color);
 }
 
 window.onload = async function onLoad() {
@@ -106,7 +108,10 @@ window.onload = async function onLoad() {
     const mode = (Math.floor(energy / 100) % 2) === 0
     const [b, c] = mode ? [-2.0, -1.2] : [-2.53, -1.61];
     const d = (flatness < .05) ? 2.0 - distort : 2.0;
-    setUniforms(gl, program, a, b, c, d);
+    // const color = energy / 100 > 5 ? .8 : Math.max(0.8, (Math.sin(energy) +
+    // 1) / 2);
+    const color = Math.min(.8, (Math.sin(timestamp / 8000) + 1) / 2);
+    setUniforms(gl, program, a, b, c, d, color);
 
     requestAnimationFrame(loop);
   });
