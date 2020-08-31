@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/many-worlds/static/css/main.b40cb29a.chunk.css",
-    "main.js": "/many-worlds/static/js/main.d6711950.chunk.js",
-    "main.js.map": "/many-worlds/static/js/main.d6711950.chunk.js.map",
+    "main.js": "/many-worlds/static/js/main.702c6539.chunk.js",
+    "main.js.map": "/many-worlds/static/js/main.702c6539.chunk.js.map",
     "runtime-main.js": "/many-worlds/static/js/runtime-main.586ca028.js",
     "runtime-main.js.map": "/many-worlds/static/js/runtime-main.586ca028.js.map",
     "static/js/2.4f897f30.chunk.js": "/many-worlds/static/js/2.4f897f30.chunk.js",
     "static/js/2.4f897f30.chunk.js.map": "/many-worlds/static/js/2.4f897f30.chunk.js.map",
     "index.html": "/many-worlds/index.html",
-    "precache-manifest.4524166cba7c0b8a00c141cd55594d02.js": "/many-worlds/precache-manifest.4524166cba7c0b8a00c141cd55594d02.js",
+    "precache-manifest.ece710a7586203416c89c6c94ad293c7.js": "/many-worlds/precache-manifest.ece710a7586203416c89c6c94ad293c7.js",
     "service-worker.js": "/many-worlds/service-worker.js",
     "static/css/main.b40cb29a.chunk.css.map": "/many-worlds/static/css/main.b40cb29a.chunk.css.map",
     "static/js/2.4f897f30.chunk.js.LICENSE.txt": "/many-worlds/static/js/2.4f897f30.chunk.js.LICENSE.txt"
@@ -17,6 +17,6 @@
     "static/js/runtime-main.586ca028.js",
     "static/js/2.4f897f30.chunk.js",
     "static/css/main.b40cb29a.chunk.css",
-    "static/js/main.d6711950.chunk.js"
+    "static/js/main.702c6539.chunk.js"
   ]
 }
