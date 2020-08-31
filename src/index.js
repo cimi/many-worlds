@@ -24,11 +24,11 @@ async function makeMicAnalyzer() {
     source: context.createMediaStreamSource(mediaStream),
     windowingFunction: 'blackman',
     // perceptualSharpness, zcr, rms
-    featureExtractors: ["energy"],
+    featureExtractors: ["energy", "spectralFlatness"],
   });
 };
 
-const [a, b, c, d] = [-2.5, -2.0, -1.2, 2.0];
+const [b, c, d] = [-2.0, -1.2, 2.0];
 const n = Math.pow(2, 20);
 
 function makeProgram(gl) {
@@ -56,7 +56,8 @@ function makeGlslCanvas() {
   const canvas = document.createElement('canvas');
   canvas.width = width * devicePixelRatio;
   canvas.height = height * devicePixelRatio;
-  canvas.style = `width: ${width}px; height: ${height}px;`;
+  const margin = (window.innerHeight - height) / 2;
+  canvas.style = `width: ${width}px; height: ${height}px; margin: ${margin};`;
 
   const gl = canvas.getContext("webgl", {antialias: true, depth: false});
   const program = makeProgram(gl);
@@ -84,22 +85,27 @@ function setUniforms(gl, program, a, b, c, d) {
   gl.uniform1f(u_c, c);
   gl.uniform1f(u_d, d);
 }
-
+let energy = 0;
 window.onload = async function onLoad() {
-  const analyzer = await makeMicAnalyzer();
+  let analyzer;
   showFpsCounter(true);
   const { gl, program } = makeGlslCanvas();
   requestAnimationFrame(function loop(timestamp) {
     let mod = 0;
+    let flatness;
     if (analyzer) {
-      const features = analyzer.get(["energy", "perceptualSharpness"]);
-      const el = document.getElementById("meyda-debug");
+      const features = analyzer.get(["energy", "spectralFlatness"]);
       mod = features ? features.energy * 10 : 0;
-      el.innerHTML = `${mod}`;
+      energy += features ? features.energy / 2 : 0;
+      flatness = features ? features.spectralFlatness : 0;
+      // console.log(Math.sin(energy), Math.sin(timestamp));
+      // const el = document.getElementById("meyda-debug");
+      // el.innerHTML = `${mod}`;
     }
     gl.drawArrays(gl.POINTS, 0, n);
-    setUniforms(gl, program, Math.sin(timestamp / 1000) - 2.0, b, c, d - mod);
+    setUniforms(gl, program, Math.sin(energy + timestamp / 10000) - 2.0, b, c, (flatness < .05) ? d -mod : d);
 
     requestAnimationFrame(loop);
   });
+  analyzer = await makeMicAnalyzer();
 };
