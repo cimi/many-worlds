@@ -12,7 +12,7 @@ import { fragmentShaderCode, vertexShaderCode } from './shaders';
 // Learn more about service workers: https://bit.ly/CRA-PWA
 serviceWorker.unregister();
 
-async function makeMicAnalyzer() {
+async function micAnalyzer() {
   const mediaStream = await getMicMediaStream();
   const AudioContext = window.AudioContext // Default
   || window.webkitAudioContext // Safari and old versions of Chrome
@@ -28,7 +28,7 @@ async function makeMicAnalyzer() {
   });
 };
 
-const [b, c, d] = [-2.0, -1.2, 2.0];
+
 const n = Math.pow(2, 20);
 
 function makeProgram(gl) {
@@ -50,8 +50,8 @@ function makeProgram(gl) {
   return program;
 }
 
-function makeGlslCanvas() {
-  const width = 780;
+function glCanvas() {
+  const width = Math.min(window.innerHeight, window.innerWidth);
   const height = width;
   const canvas = document.createElement('canvas');
   canvas.width = width * devicePixelRatio;
@@ -71,7 +71,9 @@ function makeGlslCanvas() {
   gl.vertexAttribPointer(a_position, 2, gl.FLOAT, false, 0, 0);
   gl.enableVertexAttribArray(a_position);
 
-  document.getElementById("root").appendChild(canvas);
+  const rootEl = document.getElementById("root");
+  rootEl.style = `width: ${width}px; height: ${height}px`;
+  rootEl.appendChild(canvas);
   return { gl, program };
 }
 
@@ -89,7 +91,7 @@ let energy = 0;
 window.onload = async function onLoad() {
   let analyzer;
   showFpsCounter(true);
-  const { gl, program } = makeGlslCanvas();
+  const { gl, program } = glCanvas();
   requestAnimationFrame(function loop(timestamp) {
     let mod = 0;
     let flatness;
@@ -103,9 +105,12 @@ window.onload = async function onLoad() {
       // el.innerHTML = `${mod}`;
     }
     gl.drawArrays(gl.POINTS, 0, n);
-    setUniforms(gl, program, Math.sin(energy + timestamp / 10000) - 2.0, b, c, (flatness < .05) ? d -mod : d);
+    const a = Math.sin(energy + timestamp / 10000) - 2.0;
+    const [b, c] = [-2.0, -1.2];
+    const d = (flatness < .05) ? 2.0 - mod : 2.0;
+    setUniforms(gl, program, a, b, c, d);
 
     requestAnimationFrame(loop);
   });
-  analyzer = await makeMicAnalyzer();
+  analyzer = await micAnalyzer();
 };
