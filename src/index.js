@@ -117,7 +117,8 @@ class GlAttractor {
 
 window.onload = async function onLoad() {
   showFpsCounter(true);
-  const attractor = new GlAttractor(fragmentShaderCode, vertexShaderCode, Math.pow(2, 20));
+  const points = devicePixelRatio > 1 ? Math.pow(2, 20) : Math.pow(2, 19);
+  const attractor = new GlAttractor(fragmentShaderCode, vertexShaderCode, points);
   let analyzer;
   let energy = 0;
   requestAnimationFrame(function loop(timestamp) {
