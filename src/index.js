@@ -115,27 +115,69 @@ class GlAttractor {
   }
 }
 
+class SoundMapper {
+  constructor() {
+    this.energy = 0;
+    this.features = {};
+  }
+
+  getUniforms(analyzer, ts) {
+    if (analyzer) {
+      const features = analyzer.get(["energy", "spectralFlatness"]);
+      if (features) {
+        this.energy += features.energy;
+        this.features = features;
+      } else {
+        this.features = {};
+      }
+    }
+    switch (this._energyBin() % 10) {
+      case 1:
+      case 4:
+      case 7:
+        return [-2.0, this._oscillation(ts)-2.0, -1.2, 2.0, this._getColor(ts)]
+      case 2:
+      case 5:
+        return [-2.0, -2.53, this._oscillation(ts)-1.61, 2.0, this._getColor(ts)]
+      default:
+        return [this._oscillation(ts) - 2.0, -2.0, -1.2, this._getD(), this._getColor(ts)]
+    }
+  }
+
+  _getD() {
+    return (this.features.flatness < .05) ? 2.0 - this.features.energy : 2.0;
+  }
+
+  _getColor(ts) {
+    if (this.features.energy < .05) {
+      return .0;
+    } else if (this.features.energy < .2) {
+      return Math.min(.8, (Math.sin(ts / 8000) + 1) / 2);
+    } else {
+      return .8;
+    }
+  }
+
+  _energyBin() {
+    return Math.floor(this.energy / 100);
+  }
+
+  _oscillation(ts) {
+    return Math.sin(this.energy + ts / 10000);
+  }
+}
+
 window.onload = async function onLoad() {
   showFpsCounter(true);
   const points = devicePixelRatio > 1 ? Math.pow(2, 20) : Math.pow(2, 19);
   const attractor = new GlAttractor(fragmentShaderCode, vertexShaderCode, points);
   let analyzer;
-  let energy = 0;
+  let mapper = new SoundMapper();
   requestAnimationFrame(function loop(timestamp) {
-    let [distort, flatness] = [0, 0];
-    if (analyzer) {
-      const features = analyzer.get(["energy", "spectralFlatness"]);
-      distort = features ? features.energy * 10 : 0;
-      energy += features ? features.energy / 2 : 0;
-      flatness = features ? features.spectralFlatness : 0;
-    }
-    const a = Math.sin(energy + timestamp / 10000) - 2.0;
-    const [b, c] = ((Math.floor(energy / 100) % 2) === 0) ? [-2.0, -1.2] : [-2.53, -1.61];
-    const d = (flatness < .05) ? 2.0 - distort : 2.0;
-    const color = Math.min(.8, (Math.sin(timestamp / 8000) + 1) / 2);
-
-    attractor.setUniforms(a, b, c, d, color);
+    const uniforms = mapper.getUniforms(analyzer, timestamp);
+    attractor.setUniforms(...uniforms);
     attractor.draw();
+    // document.getElementById("meyda-debug").innerHTML = `${Math.floor(mapper.energy)} ${Math.floor(mapper._energyBin())}`;
     requestAnimationFrame(loop);
   });
 
