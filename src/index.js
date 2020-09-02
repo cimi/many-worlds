@@ -163,7 +163,7 @@ class SoundMapper {
   }
 
   _oscillation(ts) {
-    return Math.sin(this.energy + ts / 10000);
+    return Math.sin(this.energy / 4 + ts / 10000);
   }
 }
 
