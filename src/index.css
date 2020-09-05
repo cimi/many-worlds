@@ -30,3 +30,66 @@ code {
 
   margin: auto;
 }
+
+#menu {
+  position: absolute;
+  bottom: 10px;
+  width: 100%;
+  text-align: center;
+}
+
+#menu a {
+  text-decoration: none;
+  width: 5em;
+  padding: 0.5em;
+  display: inline-block;
+  text-align: center;
+  color: white;
+  background-color: gray;
+}
+
+#menu svg {
+  width: 1.5em;
+  height: 1.5em;
+  margin: auto;
+  z-index: 2;
+}
+
+#menu .on .on,
+#menu .off .off {
+  display: none;
+}
+
+#menu #progress {
+  width: 100%;
+  position: absolute;
+  bottom: 0px;
+  left: 0;
+  z-index: 1;
+  opacity: .5;
+}
+
+#menu button {
+  position: relative;
+  display: inline-block;
+  padding: .75em;
+  border-width: 1px;
+  border-color: transparent;
+  margin: 0;
+  width: 5em;
+  outline: none;
+  border: none;
+  background: #000;
+  color: #fff;
+  cursor: pointer;
+  opacity: .6;
+  border-radius: 5px;
+  transition: background-color 200ms ease-in-out;
+  /* transition: opacity 200ms ease-in-out; */
+}
+
+#menu button:hover, #menu button.on {
+  opacity: .8;
+  color: #6e737a;
+  background: #fff;
+}

@@ -1,32 +1,17 @@
 import Meyda from 'meyda';
 
-import { getMicMediaStream } from './mic';
+import { micSource, fileSource } from './audio';
 import { showFpsCounter } from "./stats";
 import './index.css';
 import * as serviceWorker from './serviceWorker';
 import { fragmentShaderCode, vertexShaderCode } from './shaders';
+import { Menu } from './menu';
 
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
 serviceWorker.unregister();
-
-async function micAnalyzer() {
-  const mediaStream = await getMicMediaStream();
-  const AudioContext = window.AudioContext // Default
-  || window.webkitAudioContext // Safari and old versions of Chrome
-  || false;
-  const context = new AudioContext();
-  return Meyda.createMeydaAnalyzer({
-    audioContext: context,
-    bufferSize: 512,
-    source: context.createMediaStreamSource(mediaStream),
-    windowingFunction: 'blackman',
-    // perceptualSharpness, zcr, rms
-    featureExtractors: ["energy", "spectralFlatness"],
-  });
-};
 
 class GlAttractor {
   constructor(fragmentShaderCode, vertexShaderCode, numPoints) {
@@ -149,9 +134,9 @@ class SoundMapper {
   }
 
   _getColor(ts) {
-    if (this.features.energy < .05) {
+    if (this.features.energy < .5) {
       return .0;
-    } else if (this.features.energy < .2) {
+    } else if (this.features.energy < 2) {
       return Math.min(.8, (Math.sin(ts / 8000) + 1) / 2);
     } else {
       return .8;
@@ -163,28 +148,96 @@ class SoundMapper {
   }
 
   _oscillation(ts) {
-    return Math.sin(this.energy / 4 + ts / 10000);
+    return Math.sin(this.energy / 100 + ts / 10000);
+  }
+}
+
+class App {
+  constructor() {
+    const points = devicePixelRatio > 1 ? Math.pow(2, 20) : Math.pow(2, 19);
+    this.attractor = new GlAttractor(fragmentShaderCode, vertexShaderCode, points);
+  }
+
+  async loadFile() {
+    this.file = await fileSource();
+  }
+
+  async useMic() {
+    const {context, source, stream} = await micSource();
+    if (this.playbackActive) {
+      this.playbackActive = false;
+      this.audio.pause();
+      this.paused = true;
+    }
+
+    this.stream = stream;
+    this.context = context;
+    this.analyzer = this._makeAnalyzer(context, source);
+  }
+
+  stopMic() {
+    this.analyzer = null;
+    if (this.context && this.context.state === 'running') {
+      console.log(this.context.state);
+      this.context.close();
+    }
+    if (this.stream) {
+      this.stream.getTracks().forEach(track => track.stop());
+      this.stream = null;
+    }
+  }
+
+  useAudio() {
+    if (this.playbackActive) {
+      if (this.paused) {
+        console.log('play');
+        this.audio.play();
+        this.paused = false;
+      } else {
+        console.log('pause');
+        this.audio.pause();
+        this.paused = true;
+      }
+    } else {
+      this.stopMic();
+      this.audio = this.file.audio;
+      this.context = this.file.context;
+      this.analyzer = this._makeAnalyzer(this.context, this.file.source);
+      this.playbackActive = true;
+      this.paused = false;
+      this.audio.play();
+      if (this.context.state === 'suspended') {
+        this.context.resume();
+        console.log('resume + play');
+      }
+    }
+    return this.audio;
+  }
+
+  _makeAnalyzer(context, source) {
+    return Meyda.createMeydaAnalyzer({
+      audioContext: context,
+      bufferSize: 512,
+      source,
+      windowingFunction: 'blackman',
+      // perceptualSharpness, zcr, rms
+      featureExtractors: ["energy", "spectralFlatness"],
+    });
   }
 }
 
 window.onload = async function onLoad() {
   showFpsCounter(true);
-  const points = devicePixelRatio > 1 ? Math.pow(2, 20) : Math.pow(2, 19);
-  const attractor = new GlAttractor(fragmentShaderCode, vertexShaderCode, points);
-  let analyzer;
-  let mapper = new SoundMapper();
+  const app = new App();
+  await app.loadFile();
+  const mapper = new SoundMapper();
+  new Menu(app);
   requestAnimationFrame(function loop(timestamp) {
-    const uniforms = mapper.getUniforms(analyzer, timestamp);
-    attractor.setUniforms(...uniforms);
-    attractor.draw();
-    // document.getElementById("meyda-debug").innerHTML = `${Math.floor(mapper.energy)} ${Math.floor(mapper._energyBin())}`;
+    const uniforms = mapper.getUniforms(app.analyzer, timestamp);
+    app.attractor.setUniforms(...uniforms);
+    app.attractor.draw();
+
+    // document.getElementById("meyda-debug").innerHTML = `${Math.floor(mapper.energy)} ${Math.floor(mapper.features.energy)}`;
     requestAnimationFrame(loop);
   });
-
-  try {
-    analyzer = await micAnalyzer();
-  } catch (e) {
-    console.log(e);
-  }
-
 };

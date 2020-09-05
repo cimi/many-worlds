@@ -25,11 +25,120 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>Many worlds</title>
+    <style>
+      .hide { display: none; }
+    </style>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
     <div id="meyda-debug"></div>
+
+    <div id="menu" class="hide">
+    <!-- embed svg in html to avoid dependency nonsense -->
+    <button id="playback" class="off" href="#" title="Toggle playback (p)">
+      <progress id="progress" max="100" class="hide"></progress>
+      <svg class="on" aria-hidden="true" focusable="false" data-prefix="fas"
+      data-icon="play" class="svg-inline--fa fa-play fa-w-14" role="img"
+      xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path
+      fill="currentColor" d="M424.4 214.7L72.4 6.6C43.8-10.3 0 6.1 0 47.9V464c0
+      37.5 40.7 60.1 72.4 41.3l352-208c31.4-18.5 31.5-64.1
+      0-82.6z"></path></svg>
+      <svg class="off" aria-hidden="true" focusable="false" data-prefix="fas"
+      data-icon="pause" class="svg-inline--fa fa-pause fa-w-14" role="img"
+      xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path
+      fill="currentColor" d="M144 479H48c-26.5 0-48-21.5-48-48V79c0-26.5 21.5-48
+      48-48h96c26.5 0 48 21.5 48 48v352c0 26.5-21.5 48-48
+      48zm304-48V79c0-26.5-21.5-48-48-48h-96c-26.5 0-48 21.5-48 48v352c0 26.5
+      21.5 48 48 48h96c26.5 0 48-21.5 48-48z"></path></svg>
+    </button>
+    <button id="mic" class="off" href="#" title="Toggle microphone (m)">
+      <svg class="off" aria-hidden="true" focusable="false" data-prefix="fas"
+      data-icon="microphone-alt-slash" class="svg-inline--fa
+      fa-microphone-alt-slash fa-w-20" role="img"
+      xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><path
+      fill="currentColor" d="M633.82 458.1L476.26 336.33C488.74 312.21 496
+      284.98 496 256v-48c0-8.84-7.16-16-16-16h-16c-8.84 0-16 7.16-16 16v48c0
+      17.92-3.96 34.8-10.72 50.2l-26.55-20.52c3.1-9.4 5.28-19.22
+      5.28-29.67h-43.67l-41.4-32H416v-32h-85.33c-5.89
+      0-10.67-3.58-10.67-8v-16c0-4.42 4.78-8 10.67-8H416v-32h-85.33c-5.89
+      0-10.67-3.58-10.67-8v-16c0-4.42 4.78-8
+      10.67-8H416c0-53.02-42.98-96-96-96s-96 42.98-96 96v45.36L45.47
+      3.37C38.49-2.05 28.43-.8 23.01 6.18L3.37 31.45C-2.05 38.42-.8 48.47 6.18
+      53.9l588.36 454.73c6.98 5.43 17.03 4.17 22.46-2.81l19.64-25.27c5.41-6.97
+      4.16-17.02-2.82-22.45zM400 464h-56v-33.78c11.71-1.62 23.1-4.28
+      33.96-8.08l-50.4-38.96c-6.71.4-13.41.87-20.35.2-55.85-5.45-98.74-48.63-111.18-101.85L144
+      241.31v6.85c0 89.64 63.97 169.55 152 181.69V464h-56c-8.84 0-16 7.16-16
+      16v16c0 8.84 7.16 16 16 16h160c8.84 0 16-7.16
+      16-16v-16c0-8.84-7.16-16-16-16z"></path></svg>
+      <svg class="on" aria-hidden="true" focusable="false" data-prefix="fas"
+      data-icon="microphone-alt" class="svg-inline--fa fa-microphone-alt
+      fa-w-11" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 352
+      512"><path fill="currentColor" d="M336 192h-16c-8.84 0-16 7.16-16 16v48c0
+      74.8-64.49 134.82-140.79 127.38C96.71 376.89 48 317.11 48
+      250.3V208c0-8.84-7.16-16-16-16H16c-8.84 0-16 7.16-16 16v40.16c0 89.64
+      63.97 169.55 152 181.69V464H96c-8.84 0-16 7.16-16 16v16c0 8.84 7.16 16 16
+      16h160c8.84 0 16-7.16 16-16v-16c0-8.84-7.16-16-16-16h-56v-33.77C285.71
+      418.47 352 344.9 352 256v-48c0-8.84-7.16-16-16-16zM176 352c53.02 0
+      96-42.98 96-96h-85.33c-5.89 0-10.67-3.58-10.67-8v-16c0-4.42 4.78-8
+      10.67-8H272v-32h-85.33c-5.89 0-10.67-3.58-10.67-8v-16c0-4.42 4.78-8
+      10.67-8H272v-32h-85.33c-5.89 0-10.67-3.58-10.67-8v-16c0-4.42 4.78-8
+      10.67-8H272c0-53.02-42.98-96-96-96S80 42.98 80 96v160c0 53.02 42.98 96 96
+      96z"></path></svg>
+    </button>
+    <button id="fullscreen" class="off" href="#" title="Toggle fullscreen (f)">
+      <svg class="off" aria-hidden="true" focusable="false" data-prefix="fas"
+      data-icon="compress" class="svg-inline--fa fa-compress fa-w-14" role="img"
+      xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path
+      fill="currentColor" d="M436 192H312c-13.3 0-24-10.7-24-24V44c0-6.6 5.4-12
+      12-12h40c6.6 0 12 5.4 12 12v84h84c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12
+      12zm-276-24V44c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v84H12c-6.6 0-12
+      5.4-12 12v40c0 6.6 5.4 12 12 12h124c13.3 0 24-10.7 24-24zm0
+      300V344c0-13.3-10.7-24-24-24H12c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12
+      12h84v84c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-84h84c6.6 0
+      12-5.4 12-12v-40c0-6.6-5.4-12-12-12H312c-13.3 0-24 10.7-24 24v124c0 6.6
+      5.4 12 12 12h40c6.6 0 12-5.4 12-12z"></path></svg>
+      <svg class="on" aria-hidden="true" focusable="false" data-prefix="fas"
+      data-icon="expand" role="img"
+      xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path
+      fill="currentColor" d="M0 180V56c0-13.3 10.7-24 24-24h124c6.6 0 12 5.4 12
+      12v40c0 6.6-5.4 12-12 12H64v84c0 6.6-5.4 12-12 12H12c-6.6
+      0-12-5.4-12-12zM288 44v40c0 6.6 5.4 12 12 12h84v84c0 6.6 5.4 12 12
+      12h40c6.6 0 12-5.4 12-12V56c0-13.3-10.7-24-24-24H300c-6.6 0-12 5.4-12
+      12zm148 276h-40c-6.6 0-12 5.4-12 12v84h-84c-6.6 0-12 5.4-12 12v40c0 6.6
+      5.4 12 12 12h124c13.3 0 24-10.7 24-24V332c0-6.6-5.4-12-12-12zM160
+      468v-40c0-6.6-5.4-12-12-12H64v-84c0-6.6-5.4-12-12-12H12c-6.6 0-12 5.4-12
+      12v124c0 13.3 10.7 24 24 24h124c6.6 0 12-5.4 12-12z"></path></svg>
+    </button>
+    <button id="toggle-controls" class="off" title="Hide controls (h)">
+      <svg aria-hidden="true" focusable="false" data-prefix="fas"
+      data-icon="eye-slash"
+      role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><path
+      fill="currentColor" d="M320 400c-75.85 0-137.25-58.71-142.9-133.11L72.2
+      185.82c-13.79 17.3-26.48 35.59-36.72 55.59a32.35 32.35 0 0 0 0 29.19C89.71
+      376.41 197.07 448 320 448c26.91 0 52.87-4 77.89-10.46L346 397.39a144.13
+      144.13 0 0 1-26 2.61zm313.82 58.1l-110.55-85.44a331.25 331.25 0 0 0
+      81.25-102.07 32.35 32.35 0 0 0 0-29.19C550.29 135.59 442.93 64 320
+      64a308.15 308.15 0 0 0-147.32 37.7L45.46 3.37A16 16 0 0 0 23 6.18L3.37
+      31.45A16 16 0 0 0 6.18 53.9l588.36 454.73a16 16 0 0 0
+      22.46-2.81l19.64-25.27a16 16 0 0
+      0-2.82-22.45zm-183.72-142l-39.3-30.38A94.75 94.75 0 0 0 416 256a94.76
+      94.76 0 0 0-121.31-92.21A47.65 47.65 0 0 1 304 192a46.64 46.64 0 0 1-1.54
+      10l-73.61-56.89A142.31 142.31 0 0 1 320 112a143.92 143.92 0 0 1 144 144c0
+      21.63-5.29 41.79-13.9 60.11z"></path></svg>
+    </button>
+    <button id="info" title="Info (i)">
+      <svg aria-hidden="true" focusable="false" data-prefix="fas"
+      data-icon="info" class="svg-inline--fa fa-info fa-w-6" role="img"
+      xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 512"><path
+      fill="currentColor" d="M20 424.229h20V279.771H20c-11.046
+      0-20-8.954-20-20V212c0-11.046 8.954-20 20-20h112c11.046 0 20 8.954 20
+      20v212.229h20c11.046 0 20 8.954 20 20V492c0 11.046-8.954 20-20
+      20H20c-11.046 0-20-8.954-20-20v-47.771c0-11.046 8.954-20 20-20zM96
+      0C56.235 0 24 32.235 24 72s32.235 72 72 72 72-32.235 72-72S135.764 0 96
+      0z"></path></svg>
+    </button>
+
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.
@@ -40,5 +149,6 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
+  </div>
   </body>
 </html>
