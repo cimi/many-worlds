@@ -1,6 +1,6 @@
 export async function getMicMediaStream() {
   const constraints = { audio: true, videol: false };
-  if (navigator.mediaDevices.getUserMedia) {
+  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     console.log("Using navigator.mediaDevices");
     return navigator.mediaDevices.getUserMedia(constraints);
   } else if (navigator.webkitGetUserMedia || navigator.getUserMedia) {

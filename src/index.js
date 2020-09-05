@@ -35,7 +35,7 @@ class GlAttractor {
     this.setHeight(this.width);
     this.setMargin((window.innerHeight - this.height) / 2)
     this.canvas.style = `width: ${this.width}px; height: ${this.height}px; margin: ${this.margin};`;
-    this.gl = this.canvas.getContext("webgl", {antialias: true, depth: false});
+    this.gl = this.canvas.getContext("webgl", {antialias: true, depth: false, xrCompatible: true});
     this.program = this.compileShaders(fragmentShaderCode, vertexShaderCode);
     this.gl.useProgram(this.program);
     this.numPoints = numPoints;
@@ -166,25 +166,64 @@ class SoundMapper {
     return Math.sin(this.energy / 4 + ts / 10000);
   }
 }
+if (navigator.xr) {
+  window.onload = async function onLoadVR() {
+    const points = Math.pow(2, 10);
+    const attractor = new GlAttractor(fragmentShaderCode, vertexShaderCode, points);
+    const button = document.createElement('a');
+    button.innerHTML = 'ENTER VR'
+    await attractor.gl.makeXRCompatible();
+    navigator.xr.isSessionSupported('immersive-vr').then((isSupported) => {
+      if (isSupported) {
+        document.body.appendChild(button);
+        button.addEventListener('click', onButtonClicked);
+        button.innerHTML = 'Enter XR';
+        button.disabled = false;
+      } else {
+        console.log("WebXR doesn't support immersive-vr mode!");
+      }
+    });
+    async function onButtonClicked() {
+      const xrSession = await navigator.xr.requestSession('immersive-vr');
+      const xrRefSpace = await xrSession.requestReferenceSpace('viewer');
 
-window.onload = async function onLoad() {
-  showFpsCounter(true);
-  const points = devicePixelRatio > 1 ? Math.pow(2, 20) : Math.pow(2, 19);
-  const attractor = new GlAttractor(fragmentShaderCode, vertexShaderCode, points);
-  let analyzer;
-  let mapper = new SoundMapper();
-  requestAnimationFrame(function loop(timestamp) {
-    const uniforms = mapper.getUniforms(analyzer, timestamp);
-    attractor.setUniforms(...uniforms);
-    attractor.draw();
-    // document.getElementById("meyda-debug").innerHTML = `${Math.floor(mapper.energy)} ${Math.floor(mapper._energyBin())}`;
-    requestAnimationFrame(loop);
-  });
+      // TODO: fix mic analyzer when serving over http
+      const mapper = new SoundMapper();
+      xrSession.requestAnimationFrame(function vrLoop(ts, xrFrame) {
 
-  try {
-    analyzer = await micAnalyzer();
-  } catch (e) {
-    console.log(e);
+        // const xrViewerPose = xrFrame.getViewerPose(xrRefSpace);
+        // eslint-disable-next-line no-undef
+        xrSession.updateRenderState({ baseLayer: new XRWebGLLayer(xrSession, attractor.gl) });
+        if (true) {
+          const uniforms = mapper.getUniforms(undefined, ts);
+          attractor.setUniforms(...uniforms);
+          attractor.gl.bindFramebuffer(attractor.gl.FRAMEBUFFER, xrSession.renderState.baseLayer.framebuffer);
+          attractor.draw();
+        }
+        xrSession.requestAnimationFrame(vrLoop);
+      });
+    }
   }
+} else {
+  window.onload = async function onLoad() {
+    showFpsCounter(true);
+    // const points = devicePixelRatio > 1 ? Math.pow(2, 20) : Math.pow(2, 19);
+    const points = Math.pow(2, 20);
+    const attractor = new GlAttractor(fragmentShaderCode, vertexShaderCode, points);
+    let analyzer;
+    let mapper = new SoundMapper();
+    requestAnimationFrame(function loop(timestamp) {
+      const uniforms = mapper.getUniforms(analyzer, timestamp);
+      attractor.setUniforms(...uniforms);
+      attractor.draw();
+      // document.getElementById("meyda-debug").innerHTML = `${Math.floor(mapper.energy)} ${Math.floor(mapper._energyBin())}`;
+      requestAnimationFrame(loop);
+    });
 
-};
+    try {
+      analyzer = await micAnalyzer();
+    } catch (e) {
+      console.log(e);
+    }
+  };
+}
