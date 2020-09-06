@@ -10,11 +10,13 @@ export class Menu {
     this.mic = document.getElementById('mic');
     this.toggle = document.getElementById('toggle-controls');
     this.fullscreen = document.getElementById('fullscreen');
+    this.info = document.getElementById('info');
 
     this.fullscreen.addEventListener('click', () => this._toggleFullscreen());
     this.mic.addEventListener('click', async () => await this._toggleMicrophone());
     this.playback.addEventListener('click', () => this._togglePlayback());
     this.toggle.addEventListener('click', () => this._toggleControls());
+    this.info.addEventListener('click', () => this._toggleInfo());
 
     document.addEventListener('keypress', async (event) => {
       if (event.keyCode === 104 || event.key === "h") {
@@ -58,7 +60,12 @@ export class Menu {
   }
 
   _toggleInfo() {
-
+    const info = document.getElementById('info-box');
+    if (info.className === 'hide') {
+      info.className = '';
+    } else {
+      info.className = 'hide';
+    }
   }
 
   _toggleControls() {

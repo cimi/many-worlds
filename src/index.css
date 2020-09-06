@@ -1,3 +1,6 @@
+html {
+  height: 100%;
+}
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -5,6 +8,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  height: 100%;
 }
 
 code {
@@ -92,4 +96,23 @@ code {
   opacity: .8;
   color: #6e737a;
   background: #fff;
+}
+
+#info-box {
+  position: absolute;
+  width: 30em;
+  height: 10em;
+  padding: 5em;
+  background-color:#6e737a;
+  color: #f0efeb;
+  opacity: .8;
+  top:0;
+	bottom: 0;
+	left: 0;
+  right: 0;
+  margin: auto;
+}
+
+#info-box a {
+  color: #90e0ef;
 }
