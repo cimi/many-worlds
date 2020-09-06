@@ -185,20 +185,39 @@ if (navigator.xr) {
     });
     async function onButtonClicked() {
       const xrSession = await navigator.xr.requestSession('immersive-vr');
-      const xrRefSpace = await xrSession.requestReferenceSpace('viewer');
+      const xrRefSpace = await xrSession.requestReferenceSpace('local');
+
+      // ??? maybe these are useful, not sure
+      // const uProjectionMatrix = attractor.gl.getUniformLocation(attractor.program, "uProjectionMatrix");
+      // const uModelViewMatrix = attractor.gl.getUniformLocation(attractor.program, "uModelViewMatrix");
+
+      // eslint-disable-next-line no-undef
+      xrSession.updateRenderState({ baseLayer: new XRWebGLLayer(xrSession, attractor.gl) });
 
       // TODO: fix mic analyzer when serving over http
       const mapper = new SoundMapper();
       xrSession.requestAnimationFrame(function vrLoop(ts, xrFrame) {
+        const xrViewerPose = xrFrame.getViewerPose(xrRefSpace);
+        if (xrViewerPose) {
+          const layer = xrSession.renderState.baseLayer;
 
-        // const xrViewerPose = xrFrame.getViewerPose(xrRefSpace);
-        // eslint-disable-next-line no-undef
-        xrSession.updateRenderState({ baseLayer: new XRWebGLLayer(xrSession, attractor.gl) });
-        if (true) {
           const uniforms = mapper.getUniforms(undefined, ts);
           attractor.setUniforms(...uniforms);
-          attractor.gl.bindFramebuffer(attractor.gl.FRAMEBUFFER, xrSession.renderState.baseLayer.framebuffer);
-          attractor.draw();
+
+          attractor.gl.bindFramebuffer(attractor.gl.FRAMEBUFFER, layer.framebuffer);
+          attractor.gl.clear(attractor.gl.COLOR_BUFFER_BIT | attractor.gl.DEPTH_BUFFER_BIT);
+
+          for (const view of xrViewerPose.views) {
+            const viewport = layer.getViewport(view);
+
+            attractor.gl.viewport(viewport.x, viewport.y, viewport.width, viewport.height);
+
+            // ??? no idea
+            // attractor.gl.uniformMatrix4fv(uProjectionMatrix, false, view.projectionMatrix);
+            // attractor.gl.uniformMatrix4fv(uModelViewMatrix, false, view.transform.matrix);
+
+            attractor.draw();
+          }
         }
         xrSession.requestAnimationFrame(vrLoop);
       });
