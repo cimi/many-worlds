@@ -98,10 +98,15 @@ code {
   background: #fff;
 }
 
+#container{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
 #info-box {
-  position: absolute;
-  width: 30em;
-  height: 10em;
+  max-width: 30em;
   padding: 5em;
   background-color:#6e737a;
   color: #f0efeb;

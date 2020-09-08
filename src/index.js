@@ -1,12 +1,11 @@
 import Meyda from 'meyda';
-
+// import Modernizr from './modernizr-custom';
 import { micSource, fileSource } from './audio';
 import { showFpsCounter } from "./stats";
 import './index.css';
 import * as serviceWorker from './serviceWorker';
 import { fragmentShaderCode, vertexShaderCode } from './shaders';
 import { Menu } from './menu';
-
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
@@ -23,6 +22,9 @@ class GlAttractor {
     this.gl = this.canvas.getContext("webgl", {antialias: true, depth: false});
     this.program = this.compileShaders(fragmentShaderCode, vertexShaderCode);
     this.gl.useProgram(this.program);
+    const u_pointSize = this.gl.getUniformLocation(this.program, "u_pointSize");
+    this.gl.uniform1f(u_pointSize, devicePixelRatio > 1 ? 1.5 : .75);
+
     this.numPoints = numPoints;
     this.useVertexBuffer();
 
@@ -231,7 +233,11 @@ window.onload = async function onLoad() {
   const app = new App();
   await app.loadFile();
   const mapper = new SoundMapper();
-  new Menu(app);
+  const menu = new Menu(app);
+  // if (!(Modernizr.audio && Modernizr.webgl && Modernizr.canvas)) {
+  //   document.getElementById("warn-support").className = '';
+  //   menu._toggleInfo();
+  // }
   requestAnimationFrame(function loop(timestamp) {
     const uniforms = mapper.getUniforms(app.analyzer, timestamp);
     app.attractor.setUniforms(...uniforms);

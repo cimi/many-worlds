@@ -38,6 +38,7 @@ precision highp float;
 
 const float PI = 3.14159265359;
 
+uniform float u_pointSize;
 uniform float u_a;
 uniform float u_b;
 uniform float u_c;
@@ -57,6 +58,6 @@ for (int i = 0; i < 8; i++) {
 }
 v_t = atan(a_position.y, a_position.x) / PI;
 gl_Position = vec4(x2 / 2.0, y2 / 2.0, 0.0, 1.0);
-gl_PointSize = 1.5;
+gl_PointSize = u_pointSize;
 }
 `;
