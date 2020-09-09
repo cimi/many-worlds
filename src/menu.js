@@ -60,6 +60,7 @@ export class Menu {
   }
 
   _toggleInfo() {
+    this._toggle(this.info);
     const info = document.getElementById('info-box');
     if (info.className === 'hide') {
       info.className = '';

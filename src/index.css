@@ -83,19 +83,17 @@ code {
   width: 5em;
   outline: none;
   border: none;
-  background: #000;
-  color: #fff;
+  background: #6e737a;
+  color: #f0efeb;
   cursor: pointer;
-  opacity: .6;
+  opacity: .8;
   border-radius: 5px;
   transition: background-color 200ms ease-in-out;
-  /* transition: opacity 200ms ease-in-out; */
 }
 
 #menu button:hover, #menu button.on {
-  opacity: .8;
   color: #6e737a;
-  background: #fff;
+  background: #f0efeb;
 }
 
 #container{

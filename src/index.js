@@ -1,5 +1,5 @@
 import Meyda from 'meyda';
-// import Modernizr from './modernizr-custom';
+import Modernizr from './modernizr-custom';
 import { micSource, fileSource } from './audio';
 import { showFpsCounter } from "./stats";
 import './index.css';
@@ -13,7 +13,7 @@ import { Menu } from './menu';
 serviceWorker.unregister();
 
 class GlAttractor {
-  constructor(fragmentShaderCode, vertexShaderCode, numPoints) {
+  constructor(numPoints) {
     this.canvas = document.createElement('canvas');
     this.setWidth(Math.min(window.innerHeight, window.innerWidth));
     this.setHeight(this.width);
@@ -157,7 +157,7 @@ class SoundMapper {
 class App {
   constructor() {
     const points = devicePixelRatio > 1 ? Math.pow(2, 20) : Math.pow(2, 19);
-    this.attractor = new GlAttractor(fragmentShaderCode, vertexShaderCode, points);
+    this.attractor = new GlAttractor(points);
   }
 
   async loadFile() {
@@ -234,10 +234,10 @@ window.onload = async function onLoad() {
   await app.loadFile();
   const mapper = new SoundMapper();
   const menu = new Menu(app);
-  // if (!(Modernizr.audio && Modernizr.webgl && Modernizr.canvas)) {
-  //   document.getElementById("warn-support").className = '';
-  //   menu._toggleInfo();
-  // }
+  if (!(Modernizr.audio && Modernizr.webgl && Modernizr.canvas)) {
+    document.getElementById("warn-support").className = '';
+    menu._toggleInfo();
+  }
   requestAnimationFrame(function loop(timestamp) {
     const uniforms = mapper.getUniforms(app.analyzer, timestamp);
     app.attractor.setUniforms(...uniforms);
