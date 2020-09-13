@@ -1,11 +1,11 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "b38555b7885d77381935969751ae7f08",
+    "revision": "5a3f8aa9a1fc3ad7ea19e3556eaed8f5",
     "url": "/many-worlds/index.html"
   },
   {
-    "revision": "d335b754118b039ecdb0",
-    "url": "/many-worlds/static/css/main.d365c8ed.chunk.css"
+    "revision": "59b4a7ab3aec3df932d4",
+    "url": "/many-worlds/static/css/main.00703db6.chunk.css"
   },
   {
     "revision": "dc6c2fce89537af60f18",
@@ -16,7 +16,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/many-worlds/static/js/2.18d4b52e.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "d335b754118b039ecdb0",
+    "revision": "59b4a7ab3aec3df932d4",
     "url": "/many-worlds/static/js/main.684239e2.chunk.js"
   },
   {
