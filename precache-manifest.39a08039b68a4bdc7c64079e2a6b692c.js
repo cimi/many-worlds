@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "f3a889a3fbdcdd3c02ae312f2011969c",
+    "revision": "b38555b7885d77381935969751ae7f08",
     "url": "/many-worlds/index.html"
   },
   {
