@@ -42,7 +42,7 @@ code {
   text-align: center;
 }
 
-#menu a {
+/* #menu a {
   text-decoration: none;
   width: 5em;
   padding: 0.5em;
@@ -50,7 +50,7 @@ code {
   text-align: center;
   color: white;
   background-color: gray;
-}
+} */
 
 #menu svg {
   width: 1.5em;
@@ -89,9 +89,14 @@ code {
   opacity: .8;
   border-radius: 5px;
   transition: background-color 200ms ease-in-out;
+  transition: color 200ms ease-in-out;
 }
 
-#menu button:hover, #menu button.on {
+#menu a {
+  color: #f0efeb;
+}
+
+#menu button:hover, #menu button.on, #menu button:hover a, #menu a:hover {
   color: #6e737a;
   background: #f0efeb;
 }
